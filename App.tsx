@@ -6,113 +6,62 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
+import { PaperProvider, MD3LightTheme,
+  MD3DarkTheme, DefaultTheme, Text, adaptNavigationTheme } from 'react-native-paper';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+} from '@react-navigation/native';
+
+import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
+import {
   useColorScheme,
   View,
 } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+  reactNavigationLight: NavigationDefaultTheme,
+  reactNavigationDark: NavigationDarkTheme,
+});
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const CombinedDefaultTheme = {
+  ...MD3LightTheme,
+  ...LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    ...LightTheme.colors,
+  },
+};
+const CombinedDarkTheme = {
+  ...MD3DarkTheme,
+  ...DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    ...DarkTheme.colors,
+  },
+};
+
+
+
+const Tab = createMaterialBottomTabNavigator();
+
+
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const isDarkMode = useColorScheme() === "dark";
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <PaperProvider theme={isDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
+      <NavigationContainer theme={isDarkMode ? CombinedDarkTheme : CombinedDefaultTheme}>
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={() => <View><Text>Home</Text></View>} />
+          <Tab.Screen name="Settings" component={() => <View><Text>Settings</Text></View>} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
